@@ -1,0 +1,4 @@
+#Create login in server less sql server database.
+User master
+Create login loginname
+with password='yourpassword'
