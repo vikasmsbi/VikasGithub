@@ -1,0 +1,9 @@
+{
+	"name": "VKDataFactory",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "51dc1ca2-ccc4-42cc-b68f-db5b78cd52eb",
+		"tenantId": "d46f58b3-27d8-4e72-8b31-e9013834de5b"
+	}
+}
