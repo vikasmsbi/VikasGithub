@@ -5,22 +5,22 @@
 		"workspaceName": {
 			"value": "avworkspacesynapse"
 		},
+		"AzureDataLakeStorage_accountKey": {
+			"value": ""
+		},
+		"AzureSqlDatabase_connectionString": {
+			"value": ""
+		},
 		"AzureSqlDatabase1_connectionString": {
 			"value": ""
 		},
 		"avworkspacesynapse-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
 		},
-		"AzureSqlDatabase_connectionString": {
-			"value": ""
-		},
-		"AzureDataLakeStorage_accountKey": {
-			"value": ""
-		},
-		"avworkspacesynapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+		"AzureDataLakeStorage_properties_typeProperties_url": {
 			"value": "https://avdevstorageact.dfs.core.windows.net"
 		},
-		"AzureDataLakeStorage_properties_typeProperties_url": {
+		"avworkspacesynapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://avdevstorageact.dfs.core.windows.net"
 		}
 	}
