@@ -11,7 +11,16 @@
 		"avworkspacesynapse-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
 		},
+		"AzureSqlDatabase_connectionString": {
+			"value": ""
+		},
+		"AzureDataLakeStorage_accountKey": {
+			"value": ""
+		},
 		"avworkspacesynapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://avdevstorageact.dfs.core.windows.net"
+		},
+		"AzureDataLakeStorage_properties_typeProperties_url": {
 			"value": "https://avdevstorageact.dfs.core.windows.net"
 		}
 	}
