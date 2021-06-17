@@ -1,0 +1,17 @@
+{
+	"name": "AVSCRIPTS",
+	"properties": {
+		"content": {
+			"query": "CREATE EXTERNAL DATA SOURCE [AVExternalDataSource] WITH\n(\n    LOCATION = 'https://avdevstorageact.blob.core.windows.net/avfilesystemnamesynapse/aventerprises'\n)\n\nCREATE VIEW AVUSERDATA AS\nSELECT *\nFROM \n  OPENROWSET( \n    BULK '/dim/userdata1.parquet',\n    DATA_SOURCE = 'AVExternalDataSource', \n    FORMAT='PARQUET'\n    )\n     \n    AS FactFinance",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "avsqldb1"
+			},
+			"resultLimit": -1
+		},
+		"type": "SqlQuery"
+	}
+}
