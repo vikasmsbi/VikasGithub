@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage'"
 		},
+		"AzureDataLakeStorageParquet_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorageParquet'"
+		},
 		"AzureSqlDatabase_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase'"
@@ -24,6 +28,10 @@
 			"metadata": "Secure string for 'connectionString' of 'avworkspacesynapse-WorkspaceDefaultSqlServer'"
 		},
 		"AzureDataLakeStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://avdevstorageact.dfs.core.windows.net"
+		},
+		"AzureDataLakeStorageParquet_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://avdevstorageact.dfs.core.windows.net"
 		},
@@ -108,6 +116,72 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/gen2sourcedataset')]",
 				"[concat(variables('workspaceId'), '/datasets/DelimitedText1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "MoveDataToLakh",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AzureSqlTable2",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Parquet1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/AzureSqlTable2')]",
+				"[concat(variables('workspaceId'), '/datasets/Parquet1')]"
 			]
 		},
 		{
@@ -276,6 +350,84 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Parquet1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorageParquet",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "aventerprises/fact",
+						"fileSystem": "avfilesystemnamesynapse"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "registration_dttm",
+						"type": "INT96"
+					},
+					{
+						"name": "id",
+						"type": "INT32"
+					},
+					{
+						"name": "first_name",
+						"type": "UTF8"
+					},
+					{
+						"name": "last_name",
+						"type": "UTF8"
+					},
+					{
+						"name": "email",
+						"type": "UTF8"
+					},
+					{
+						"name": "gender",
+						"type": "UTF8"
+					},
+					{
+						"name": "ip_address",
+						"type": "UTF8"
+					},
+					{
+						"name": "cc",
+						"type": "UTF8"
+					},
+					{
+						"name": "country",
+						"type": "UTF8"
+					},
+					{
+						"name": "birthdate",
+						"type": "UTF8"
+					},
+					{
+						"name": "salary",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "title",
+						"type": "UTF8"
+					},
+					{
+						"name": "comments",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureDataLakeStorageParquet')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/gen2sourcedataset')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -319,6 +471,29 @@
 					"accountKey": {
 						"type": "SecureString",
 						"value": "[parameters('AzureDataLakeStorage_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureDataLakeStorageParquet')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorageParquet_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorageParquet_accountKey')]"
 					}
 				},
 				"connectVia": {
@@ -446,7 +621,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "CREATE EXTERNAL DATA SOURCE [AVExternalDataSource] WITH\n(\n    LOCATION = 'https://avdevstorageact.blob.core.windows.net/avfilesystemnamesynapse/aventerprises'\n)\n\nCREATE VIEW AVUSERDATA AS\nSELECT *\nFROM \n  OPENROWSET( \n    BULK '/dim/userdata1.parquet',\n    DATA_SOURCE = 'AVExternalDataSource', \n    FORMAT='PARQUET'\n    )\n     \n    AS FactFinance\n\nCREATE VIEW Employee AS\nSELECT *\nFROM \n  OPENROWSET( \n    BULK '/fact/employe.txt',\n    DATA_SOURCE = 'AVExternalDataSource', \n    FORMAT='PARQUET'\n    )\n     \n    AS FactFinance",
+					"query": "CREATE EXTERNAL DATA SOURCE [AVExternalDataSource] WITH\n(\n    LOCATION = 'https://avdevstorageact.blob.core.windows.net/avfilesystemnamesynapse/aventerprises'\n)\n\nCREATE VIEW AVUSERDATA AS\nSELECT *\nFROM \n  OPENROWSET( \n    BULK '/dim/userdata1.parquet',\n    DATA_SOURCE = 'AVExternalDataSource', \n    FORMAT='PARQUET'\n    )\n     \n    AS FactFinance\n---https://avdevstorageact.blob.core.windows.net/avfilesystemnamesynapse/aventerprises/fact/dbo.employe.parquet\nCREATE VIEW Employee AS\nSELECT *\nFROM \n  OPENROWSET( \n    BULK '/fact/dbo.employe.parquet',\n    DATA_SOURCE = 'AVExternalDataSource', \n    FORMAT='PARQUET'\n    )\n     \n    AS FactFinance\n\n------------------------\nCREATE VIEW Employee AS\nSELECT *\nFROM \n  OPENROWSET( \n    BULK 'https://avdevstorageact.blob.core.windows.net/avfilesystemnamesynapse/aventerprises/fact/dbo.employe.parquet',\n    --DATA_SOURCE = 'AVExternalDataSource', \n    FORMAT='PARQUET'\n    )\n AS FactFinance\n\n",
 					"metadata": {
 						"language": "sql"
 					},
