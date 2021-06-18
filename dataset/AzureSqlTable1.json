@@ -10,7 +10,7 @@
 		"schema": [],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "avuserdata"
+			"table": "UserData"
 		}
 	},
 	"type": "Microsoft.Synapse/workspaces/datasets"
