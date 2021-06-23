@@ -10,6 +10,18 @@
 		"AzureSqlDatabase_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase'"
+		},
+		"UsingParameter_properties_pipeline1_parameters_createdBy": {
+			"type": "string",
+			"defaultValue": "Amit"
+		},
+		"UsingParameter_properties_pipeline1_parameters_logType": {
+			"type": "string",
+			"defaultValue": "AmitLog"
+		},
+		"UsingParameter_properties_pipeline1_parameters_Message": {
+			"type": "string",
+			"defaultValue": "Salary kab aayagi."
 		}
 	},
 	"variables": {
@@ -96,6 +108,165 @@
 					{
 						"name": "Copy data1",
 						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "InsertLog",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable2",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "InsertLog",
+						"description": "Insert Log",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[uspInsertProcessLog]",
+							"storedProcedureParameters": {
+								"createdBy": {
+									"value": {
+										"value": "@pipeline().parameters.createdBy",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"LogMessage": {
+									"value": {
+										"value": "@pipeline().parameters.Message",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"logType": {
+									"value": {
+										"value": "@pipeline().parameters.logType",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"processID": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"processName": {
+									"value": {
+										"value": "@pipeline().DataFactory",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureSqlDatabase",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"parameters": {
+					"createdBy": {
+						"type": "string"
+					},
+					"logType": {
+						"type": "string",
+						"defaultValue": "Logtype by vikas"
+					},
+					"Message": {
+						"type": "string",
+						"defaultValue": "Before Load by vikas"
+					}
+				},
+				"variables": {
+					"ProcessId": {
+						"type": "String"
+					},
+					"TableName": {
+						"type": "String"
+					},
+					"CreateBy": {
+						"type": "String"
+					},
+					"CreatedOn": {
+						"type": "String"
+					},
+					"LogType": {
+						"type": "String"
+					},
+					"Message": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable2')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipelineOnAzure')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Namita",
+						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
@@ -140,12 +311,45 @@
 						]
 					}
 				],
-				"annotations": [],
-				"lastPublishTime": "2021-06-11T11:54:25Z"
+				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]",
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTable2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/UsingParameter')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipeline1",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"createdBy": "[parameters('UsingParameter_properties_pipeline1_parameters_createdBy')]",
+							"logType": "[parameters('UsingParameter_properties_pipeline1_parameters_logType')]",
+							"Message": "[parameters('UsingParameter_properties_pipeline1_parameters_Message')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 15,
+						"startTime": "2021-06-23T08:54:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipeline1')]"
 			]
 		}
 	]

@@ -7,6 +7,15 @@
 		},
 		"AzureSqlDatabase_connectionString": {
 			"value": ""
+		},
+		"UsingParameter_properties_pipeline1_parameters_createdBy": {
+			"value": "Amit"
+		},
+		"UsingParameter_properties_pipeline1_parameters_logType": {
+			"value": "AmitLog"
+		},
+		"UsingParameter_properties_pipeline1_parameters_Message": {
+			"value": "Salary kab aayagi."
 		}
 	}
 }

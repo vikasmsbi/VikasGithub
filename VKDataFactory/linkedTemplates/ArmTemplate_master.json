@@ -11,6 +11,18 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase'"
 		},
+		"UsingParameter_properties_pipeline1_parameters_createdBy": {
+			"type": "string",
+			"defaultValue": "Amit"
+		},
+		"UsingParameter_properties_pipeline1_parameters_logType": {
+			"type": "string",
+			"defaultValue": "AmitLog"
+		},
+		"UsingParameter_properties_pipeline1_parameters_Message": {
+			"type": "string",
+			"defaultValue": "Salary kab aayagi."
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -40,6 +52,15 @@
 					},
 					"AzureSqlDatabase_connectionString": {
 						"value": "[parameters('AzureSqlDatabase_connectionString')]"
+					},
+					"UsingParameter_properties_pipeline1_parameters_createdBy": {
+						"value": "[parameters('UsingParameter_properties_pipeline1_parameters_createdBy')]"
+					},
+					"UsingParameter_properties_pipeline1_parameters_logType": {
+						"value": "[parameters('UsingParameter_properties_pipeline1_parameters_logType')]"
+					},
+					"UsingParameter_properties_pipeline1_parameters_Message": {
+						"value": "[parameters('UsingParameter_properties_pipeline1_parameters_Message')]"
 					}
 				}
 			},
