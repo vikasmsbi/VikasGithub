@@ -2,8 +2,15 @@
 	"name": "AVMultiPipeline",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
-		"pipelines": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pipeline1",
+					"type": "PipelineReference"
+				}
+			}
+		],
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
