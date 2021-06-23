@@ -1,0 +1,26 @@
+{
+	"name": "AVMultiPipeline",
+	"properties": {
+		"annotations": [
+			"AVAnnotations"
+		],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pipeline1",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 24,
+				"startTime": "2021-06-23T08:07:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
