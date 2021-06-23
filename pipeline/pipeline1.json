@@ -45,8 +45,106 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "InsertLog",
+				"description": "Insert Log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[uspInsertProcessLog]",
+					"storedProcedureParameters": {
+						"createdBy": {
+							"value": {
+								"value": "@pipeline().parameters.createdBy",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"LogMessage": {
+							"value": {
+								"value": "@pipeline().parameters.Message",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"logType": {
+							"value": {
+								"value": "@pipeline().parameters.logType",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"processID": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"processName": {
+							"value": {
+								"value": "@pipeline().DataFactory",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
+		"parameters": {
+			"processID": {
+				"type": "string"
+			},
+			"processName": {
+				"type": "string"
+			},
+			"createdBy": {
+				"type": "string",
+				"defaultValue": "Vikas"
+			},
+			"logType": {
+				"type": "string",
+				"defaultValue": "Insert Data"
+			},
+			"Message": {
+				"type": "string",
+				"defaultValue": "Before loading"
+			}
+		},
+		"variables": {
+			"ProcessId": {
+				"type": "String"
+			},
+			"TableName": {
+				"type": "String"
+			},
+			"CreateBy": {
+				"type": "String"
+			},
+			"CreatedOn": {
+				"type": "String"
+			},
+			"LogType": {
+				"type": "String"
+			},
+			"Message": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
