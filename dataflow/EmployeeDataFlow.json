@@ -1,0 +1,40 @@
+{
+	"name": "EmployeeDataFlow",
+	"properties": {
+		"description": "EmployeeDataFlow",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SourceEmployee",
+						"type": "DatasetReference"
+					},
+					"name": "Source"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "TargetEmployee",
+						"type": "DatasetReference"
+					},
+					"name": "Sink45"
+				},
+				{
+					"dataset": {
+						"referenceName": "OtherEmployee",
+						"type": "DatasetReference"
+					},
+					"name": "SinkOther"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ConditionalSplit1"
+				}
+			],
+			"script": "source(output(\n\t\tname as string,\n\t\tage as integer,\n\t\tsalary as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Source\nSource split(age<45,\n\tdisjoint: false) ~> ConditionalSplit1@(Less45, Greater45)\nConditionalSplit1@Less45 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tname as string,\n\t\tage as integer,\n\t\tsalary as double\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Sink45\nConditionalSplit1@Greater45 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tname as string,\n\t\tage as integer,\n\t\tsalary as double\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> SinkOther"
+		}
+	}
+}
