@@ -6,22 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "VKDataFactory"
-		},
-		"AzureSqlDatabase_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase'"
-		},
-		"UsingParameter_properties_pipeline1_parameters_createdBy": {
-			"type": "string",
-			"defaultValue": "Amit"
-		},
-		"UsingParameter_properties_pipeline1_parameters_logType": {
-			"type": "string",
-			"defaultValue": "AmitLog"
-		},
-		"UsingParameter_properties_pipeline1_parameters_Message": {
-			"type": "string",
-			"defaultValue": "Salary kab aayagi."
 		}
 	},
 	"variables": {
@@ -114,15 +98,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "EmployeeDataFlow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Source": {},
-									"Sink45": {},
-									"SinkOther": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -167,7 +144,6 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase')]",
 				"[concat(variables('factoryId'), '/dataflows/EmployeeDataFlow')]"
 			]
 		},
@@ -203,9 +179,7 @@
 					"table": "employeTarget"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SourceEmployee')]",
@@ -239,9 +213,7 @@
 					"table": "employe"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/TargetEmployee')]",
@@ -275,57 +247,7 @@
 					"table": "employeLess45"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Created By Vikas",
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureSqlDatabase_connectionString')]"
-				}
-			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/UsingParameter')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pipeline1",
-							"type": "PipelineReference"
-						},
-						"parameters": {
-							"createdBy": "[parameters('UsingParameter_properties_pipeline1_parameters_createdBy')]",
-							"logType": "[parameters('UsingParameter_properties_pipeline1_parameters_logType')]",
-							"Message": "[parameters('UsingParameter_properties_pipeline1_parameters_Message')]"
-						}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 15,
-						"startTime": "2021-06-23T08:54:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pipeline1')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/EmployeeDataFlow')]",
