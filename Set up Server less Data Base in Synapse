@@ -1,0 +1,50 @@
+---Step- 1
+
+IF NOT EXISTS (SELECT * FROM sys.symmetric_keys) BEGIN
+  declare @password nvarchar(400) = CAST(newid() as VARCHAR(400));
+  EXEC('CREATE MASTER KEY ENCRYPTION BY PASSWORD = ''' + @password + '''')
+END
+
+CREATE DATABASE SCOPED CREDENTIAL SynapseIdentity
+WITH IDENTITY = 'Managed Identity';
+GO
+
+
+---Step-2
+
+
+DROP EXTERNAL DATA SOURCE  BPCCurated
+GO
+CREATE EXTERNAL DATA SOURCE [BPCCurated] WITH
+(
+    LOCATION = 'https://abcserver.dfs.core.windows.net/curated/main/bpc',
+    CREDENTIAL = SynapseIdentity
+)
+GO
+
+
+---Step-3
+
+CREATE LOGIN [TestPBIADMIN] WITH PASSWORD = 'Vikas kumar tyagi@hcl';
+CREATE USER [TestPBIADMIN] FROM LOGIN [TestPBIADMIN];
+
+
+GRANT CONTROL ON DATABASE SCOPED CREDENTIAL::SynapseIdentity TO TestPBIADMIN
+GRANT REFERENCES ON DATABASE SCOPED CREDENTIAL ::SynapseIdentity TO TestPBIADMIN;
+
+ALTER ROLE db_datareader ADD MEMBER TestPBIADMIN
+
+---Step 4
+
+CREATE VIEW Abc
+AS
+SELECT *  FROM 
+OPENROWSET( 
+BULK '/FACT/FactFinanceTbl.parquet',
+DATA_SOURCE = 'BPCCurated', 
+FORMAT='PARQUET'
+)
+AS ABC
+
+
+
